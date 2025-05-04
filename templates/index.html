@@ -3,57 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SocketBot - Real-Time Chat</title>
+    <title>SocketBot - Futuristic Chat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.4/dist/index.min.js"></script>
 </head>
 <body>
+    <div class="particles-container" id="particles-container"></div>
     <div class="app-container">
+        <div class="mode-toggle" id="mode-toggle">
+            <div class="mode-toggle-slider"></div>
+        </div>
         <div class="login-container" id="login-container">
-            <div class="login-form">
+            <form class="login-form glassmorphism">
                 <h1>SocketBot</h1>
-                <p>Real-Time Distributed Chat System</p>
+                <p>Enter the future of communication</p>
                 <div class="input-group">
-                    <input type="text" id="username-input" placeholder="Enter your username" autofocus>
-                    <button id="join-btn">Join Chat</button>
+                    <input type="text" id="username-input" placeholder="Enter your username" autocomplete="off">
+                    <button type="button" id="join-btn" class="hover-glow">Join</button>
                 </div>
                 <div class="login-error" id="login-error"></div>
-            </div>
+            </form>
         </div>
-
         <div class="chat-container" id="chat-container" style="display: none;">
-            <div class="chat-header">
+            <div class="chat-header glassmorphism">
                 <div class="chat-title">
-                    <h2>SocketBot</h2>
+                    <div class="logo">
+                        <i class="fas fa-robot logo-icon"></i>
+                        <span class="logo-text">SocketBot</span>
+                    </div>
                     <span id="online-count">0 online</span>
                 </div>
                 <div class="user-info">
+                    <div class="user-avatar" id="user-avatar"></div>
                     <span id="current-user"></span>
-                    <button id="logout-btn">Logout</button>
+                    <button id="logout-btn" class="hover-glow"><i class="fas fa-sign-out-alt"></i> Logout</button>
                 </div>
             </div>
-            
             <div class="chat-sidebar">
-                <div class="sidebar-header">
+                <div class="sidebar-header glassmorphism">
                     <h3>Active Users</h3>
+                    <div class="sidebar-icons">
+                        <i class="fas fa-users sidebar-icon hover-glow" id="sidebar-toggle"></i>
+                    </div>
                 </div>
                 <ul id="users-list"></ul>
             </div>
-            
-            <div class="chat-messages" id="chat-messages"></div>
-            
+            <div class="chat-messages" id="chat-messages">
+                <div class="empty-state" id="empty-state">
+                    <i class="fas fa-comments empty-state-icon"></i>
+                    <h2 class="empty-state-title">Welcome to SocketBot</h2>
+                    <p class="empty-state-message">Start chatting by typing a message or sending an image/voice note!</p>
+                </div>
+            </div>
             <div class="typing-indicator" id="typing-indicator"></div>
-            
             <div class="chat-input">
+                <div class="input-tools">
+                    <label for="image-upload" class="input-tool hover-glow">
+                        <i class="fas fa-image"></i>
+                        <input type="file" id="image-upload" accept="image/*" style="display: none;">
+                    </label>
+                    <button id="emoji-btn" class="input-tool hover-glow"><i class="fas fa-smile"></i></button>
+                    <button id="voice-btn" class="input-tool hover-glow"><i class="fas fa-microphone"></i></button>
+                </div>
                 <input type="text" id="message-input" placeholder="Type a message...">
-                <button id="send-btn">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
+                <button id="send-btn" class="hover-glow"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
+        <div class="connection-status" id="connection-status">
+            <div class="connection-indicator"></div>
+            <span>Connected</span>
+        </div>
     </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
     <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
 </body>
 </html>
