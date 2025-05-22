@@ -747,40 +747,33 @@ body {
     to { box-shadow: 0 0 20px rgba(52, 152, 219, 0.8), 0 0 30px rgba(46, 204, 113, 0.5); }
 }
 
-/* .mode-toggle {
-    position: fixed;
-    top: 15px;
-    right: 15px;
+.mode-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
     width: 50px;
-    height: 26px;
+    height: 25px;
     background: var(--bg-light);
-    border-radius: 26px;
+    border-radius: 25px;
     cursor: pointer;
     display: flex;
     align-items: center;
-    padding: 0 4px;
-    transition: background 0.3s ease;
-    z-index: 1000;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-} */
+    padding: 0 5px;
+    transition: all 0.3s;
+}
 
-/* .mode-toggle-slider {
-    width: 20px;
-    height: 20px;
+.mode-toggle-slider {
+    width: 18px;
+    height: 18px;
     background: var(--accent-color);
     border-radius: 50%;
-    transition: transform 0.3s ease, background 0.3s ease;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-} */
+    transition: all 0.3s;
+}
 
-/* .mode-toggle.dark .mode-toggle-slider {
-    transform: translateX(24px);
+.mode-toggle.dark .mode-toggle-slider {
+    transform: translateX(25px);
     background: var(--success-color);
-} */
-
-/* .mode-toggle:hover {
-    background: var(--bg-medium);
-} */
+}
 
 .notification {
     position: fixed;
@@ -1105,22 +1098,6 @@ body.light .message-received .message-bubble {
         border-radius: 6px;
     }
 
-    .sidebar-icon.toggle-sidebar {
-        font-size: 24px;
-        color: var(--text-color);
-        cursor: pointer;
-        padding: 8px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.1);
-        transition: background 0.3s;
-        order: 0;
-        margin-right: 8px;
-    }
-
-    .sidebar-icon.toggle-sidebar:hover {
-        background: var(--accent-color);
-    }
-
     .chat-sidebar {
         display: none;
         position: fixed;
@@ -1163,15 +1140,6 @@ body.light .message-received .message-bubble {
     .user-status {
         width: 8px;
         height: 8px;
-    }
-
-    .user-status.online {
-        background-color: var(--success-color);
-        box-shadow: 0 0 5px var(--success-color);
-    }
-
-    .user-status.offline {
-        background-color: var(--text-muted);
     }
 
     .chat-messages {
@@ -1381,23 +1349,21 @@ body.light .message-received .message-bubble {
         font-size: 14px;
     }
 
-    /* .mode-toggle {
+    .mode-toggle {
         top: 10px;
         right: 10px;
-        width: 48px;
-        height: 24px;
-        border-radius: 24px;
-        padding: 0 3px;
-    } */
+        width: 40px;
+        height: 20px;
+    }
 
-    /* .mode-toggle-slider {
-        width: 18px;
-        height: 18px;
-    } */
+    .mode-toggle-slider {
+        width: 14px;
+        height: 14px;
+    }
 
-    /* .mode-toggle.dark .mode-toggle-slider {
-        transform: translateX(24px);
-    } */
+    .mode-toggle.dark .mode-toggle-slider {
+        transform: translateX(20px);
+    }
 
     .empty-state {
         padding: 15px;
@@ -1473,16 +1439,17 @@ body.light .message-received .message-bubble {
         font-size: 11px;
     }
 
+    .user-info {
+        gap: 5px;
+        width: 100%;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
     #logout-btn {
         padding: 4px 8px;
         font-size: 12px;
         border-radius: 5px;
-    }
-
-    .sidebar-icon.toggle-sidebar {
-        font-size: 20px;
-        padding: 6px;
-        margin-right: 6px;
     }
 
     .chat-sidebar {
@@ -1496,6 +1463,10 @@ body.light .message-received .message-bubble {
 
     .sidebar-header h3 {
         font-size: 12px;
+    }
+
+    #users-list li {
+        padding: 8px 10px;
     }
 
     .user-avatar-small {
@@ -1670,23 +1641,19 @@ body.light .message-received .message-bubble {
         font-size: 12px;
     }
 
-    /* .mode-toggle {
-        top: 8px;
-        right: 8px;
-        width: 40px;
-        height: 20px;
-        border-radius: 20px;
-        padding: 0 2px;
-    } */
+    .mode-toggle {
+        width: 35px;
+        height: 18px;
+    }
 
-    /* .mode-toggle-slider {
-        width: 16px;
-        height: 16px;
+    .mode-toggle-slider {
+        width: 12px;
+        height: 12px;
     }
 
     .mode-toggle.dark .mode-toggle-slider {
-        transform: translateX(20px);
-    } */
+        transform: translateX(18px);
+    }
 
     .empty-state {
         padding: 10px;

@@ -2,13 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SocketBot - Futuristic Chat</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mini Clone Discord - Futuristic Chat</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.7.2/dist/socket.io.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.4/dist/index.min.js"></script>
 </head>
 <body>
     <div class="particles-container" id="particles-container"></div>
@@ -18,7 +16,7 @@
         </div>
         <div class="login-container" id="login-container">
             <form class="login-form glassmorphism">
-                <h1>SocketBot</h1>
+                <i class="fas fa-robot logo-icon"><h1>Mini Clone Discord</h1></i>
                 <p>Enter the future of communication</p>
                 <div class="input-group">
                     <input type="text" id="username-input" placeholder="Enter your username" autocomplete="off">
@@ -32,7 +30,7 @@
                 <div class="chat-title">
                     <div class="logo">
                         <i class="fas fa-robot logo-icon"></i>
-                        <span class="logo-text">SocketBot</span>
+                        <span class="logo-text">Mini Clone Discord</span>
                     </div>
                     <span id="online-count">0 online</span>
                 </div>
@@ -54,8 +52,8 @@
             <div class="chat-messages" id="chat-messages">
                 <div class="empty-state" id="empty-state">
                     <i class="fas fa-comments empty-state-icon"></i>
-                    <h2 class="empty-state-title">Welcome to SocketBot</h2>
-                    <p class="empty-state-message">Start chatting by typing a message or sending an image/voice note!</p>
+                    <h2 class="empty-state-title">Welcome to Mini Clone Discord</h2>
+                    <p class="empty-state-message">Start chatting by typing a message, sending an image, voice note, or capturing a photo!</p>
                 </div>
             </div>
             <div class="typing-indicator" id="typing-indicator"></div>
@@ -65,6 +63,7 @@
                         <i class="fas fa-image"></i>
                         <input type="file" id="image-upload" accept="image/*" style="display: none;">
                     </label>
+                    <button id="camera-btn" class="input-tool hover-glow"><i class="fas fa-camera"></i></button>
                     <button id="emoji-btn" class="input-tool hover-glow"><i class="fas fa-smile"></i></button>
                     <button id="voice-btn" class="input-tool hover-glow"><i class="fas fa-microphone"></i></button>
                 </div>
@@ -77,8 +76,12 @@
             <span>Connected</span>
         </div>
     </div>
+    <!-- Hidden elements for camera capture -->
+    <video id="camera-video" style="display: none;"></video>
+    <canvas id="camera-canvas" style="display: none;"></canvas>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.7.2/dist/socket.io.min.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1.14.1/index.js"></script>
     <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
-    <script src="https://cdn.socket.io/5.3.1/socket.io.min.js"></script>
-
 </body>
 </html>
