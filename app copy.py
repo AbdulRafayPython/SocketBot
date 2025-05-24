@@ -10,13 +10,16 @@ import base64
 import threading
 import psutil
 
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'socketbot_secret_key'
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif', 'mp3', 'wav'}
 
+#TCP Handshaking
 socketio = SocketIO(app, cors_allowed_origins="*")
 
+#THREADS AND SOCKETS
 def show_threads_and_sockets():
     print("\n========== 🧵 THREADS ==========")
     print(f"Total active threads: {threading.active_count()}")
@@ -24,8 +27,8 @@ def show_threads_and_sockets():
         print(f"➡️ Name: {thread.name} | Daemon: {thread.daemon} | Alive: {thread.is_alive()}")
 
     print("\n========== 🔌 SOCKETS ==========")
-    p = psutil.Process(os.getpid())
-    connections = p.connections(kind='inet')
+    p = psutil.Process(os.getpid())  # Current Flask process
+    connections = p.connections(kind='inet')  # Only sockets owned by this process
     for conn in connections:
         laddr = f"{conn.laddr.ip}:{conn.laddr.port}" if conn.laddr else "N/A"
         raddr = f"{conn.raddr.ip}:{conn.raddr.port}" if conn.raddr else "N/A"
@@ -37,11 +40,11 @@ def check_system():
     show_threads_and_sockets()
     return "System info printed in terminal."
 
+# Ensure upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 active_users = {}
 typing_users = {}
-conference_users = {}  # Track users in video conference
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
@@ -67,14 +70,6 @@ def handle_disconnect():
         user_id = user['user_id']
         db.set_user_status(user_id, 'offline')
         del active_users[request.sid]
-        if request.sid in conference_users:
-            del conference_users[request.sid]
-            emit('leave_conference', {'sid': request.sid, 'username': username}, broadcast=True)
-            emit('conference_status', {
-                'username': username,
-                'action': 'ended',
-                'initiator_sid': request.sid
-            }, broadcast=True)
         emit('user_status', {
             'username': username,
             'status': 'offline',
@@ -99,9 +94,9 @@ def handle_registration(data):
         user_id = db.save_user(username)
         if user_id:
             db.save_user_session(
-                user_id,
-                request.sid,
-                request.remote_addr,
+                user_id, 
+                request.sid, 
+                request.remote_addr, 
                 request.headers.get('User-Agent', '')
             )
             active_users[request.sid] = {
@@ -113,6 +108,7 @@ def handle_registration(data):
             for msg in recent_messages:
                 statuses = db.get_message_status(msg['id'])
                 formatted_statuses = {s['user_id']: s['status'] for s in statuses}
+                # Mark messages as seen for the new user (except their own)
                 if msg['username'] != username:
                     db.update_message_status(msg['id'], user_id, 'seen')
                     formatted_statuses[user_id] = 'seen'
@@ -140,9 +136,6 @@ def handle_registration(data):
                 'status': 'online',
                 'active_users': get_active_usernames()
             }, broadcast=True)
-            emit('conference_users', {
-                'users': list(conference_users.values())
-            })
             print(f"User {username} registered")
         else:
             emit('registration_response', {'status': 'error', 'message': 'Error registering user'})
@@ -170,13 +163,17 @@ def handle_message(data):
         db.update_user_session(request.sid)
         timestamp = format_timestamp(saved_message['created_at'])
         message_id = saved_message['id']
+        # Initialize statuses dictionary
         statuses = {}
+        # Check for other active users
         other_users = [u for sid, u in active_users.items() if u['user_id'] != user_id]
         if other_users:
+            # Mark message as delivered for all other online users
             for sid, u in active_users.items():
                 if u['user_id'] != user_id:
                     db.update_message_status(message_id, u['user_id'], 'delivered')
                     statuses[u['user_id']] = 'delivered'
+        # If no other users, statuses remains empty (indicating "delivered" to frontend)
         
         emit('new_message', {
             'id': message_id,
@@ -197,7 +194,7 @@ def handle_file_upload(data):
         return
     user = active_users[request.sid]
     file_data = data.get('file')
-    file_type = data.get('type')
+    file_type = data.get('type')  # 'image' or 'voice'
     
     if not file_data:
         emit('file_response', {'status': 'error', 'message': 'No file provided'})
@@ -205,14 +202,14 @@ def handle_file_upload(data):
     
     try:
         header, encoded = file_data.split(',', 1)
-        extension = 'png' if file_type == 'image' else 'webm' if file_type == 'voice' else 'mp3'
+        extension = 'png' if file_type == 'image' else 'mp3'
         filename = f"{uuid.uuid4()}.{extension}"
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         
         with open(filepath, 'wb') as f:
             f.write(base64.b64decode(encoded))
         
-        message = ''
+        message = f"Uploaded {file_type}"
         saved_message = db.save_message(user['user_id'], message, file_type, filename)
         
         if saved_message:
@@ -275,74 +272,6 @@ def handle_message_seen(data):
             'status': 'seen'
         }, broadcast=True)
 
-@socketio.on('join_conference')
-def handle_join_conference():
-    if request.sid not in active_users:
-        return
-    user = active_users[request.sid]
-    conference_users[request.sid] = {
-        'username': user['username'],
-        'sid': request.sid
-    }
-    emit('join_conference', {
-        'sid': request.sid,
-        'username': user['username']
-    }, broadcast=True)
-    emit('conference_users', {
-        'users': list(conference_users.values())
-    }, broadcast=True)
-    emit('conference_status', {
-        'username': user['username'],
-        'action': 'started',
-        'initiator_sid': request.sid
-    }, broadcast=True)
-
-@socketio.on('leave_conference')
-def handle_leave_conference():
-    if request.sid in conference_users:
-        user = active_users[request.sid]
-        del conference_users[request.sid]
-        emit('leave_conference', {
-            'sid': request.sid,
-            'username': user['username']
-        }, broadcast=True)
-        emit('conference_users', {
-            'users': list(conference_users.values())
-        }, broadcast=True)
-        emit('conference_status', {
-            'username': user['username'],
-            'action': 'ended',
-            'initiator_sid': request.sid
-        }, broadcast=True)
-
-@socketio.on('video_offer')
-def handle_video_offer(data):
-    target_sid = data.get('target_sid')
-    if target_sid in active_users:
-        emit('video_offer', {
-            'from_sid': request.sid,
-            'offer': data['offer'],
-            'username': active_users[request.sid]['username']
-        }, to=target_sid)
-
-@socketio.on('video_answer')
-def handle_video_answer(data):
-    target_sid = data.get('target_sid')
-    if target_sid in active_users:
-        emit('video_answer', {
-            'from_sid': request.sid,
-            'answer': data['answer']
-        }, to=target_sid)
-
-@socketio.on('ice_candidate')
-def handle_ice_candidate(data):
-    target_sid = data.get('target_sid')
-    if target_sid in active_users:
-        emit('ice_candidate', {
-            'from_sid': request.sid,
-            'candidate': data['candidate']
-        }, to=target_sid)
-
 def update_typing_status():
     now = datetime.datetime.now()
     for sid in list(typing_users.keys()):
@@ -352,7 +281,7 @@ def update_typing_status():
     socketio.emit('typing_status', {'users': users_typing})
 
 def get_active_usernames():
-    return {user['user_id']: user['username'] for user in active_users.values()}
+    return [user['username'] for user in active_users.values()]
 
 def format_timestamp(timestamp):
     if isinstance(timestamp, str):
@@ -362,3 +291,6 @@ def format_timestamp(timestamp):
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=8000)
     show_threads_and_sockets()
+
+
+

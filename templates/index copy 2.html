@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mini Clone Discord - Futuristic Chat</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
@@ -59,14 +59,13 @@
             <div class="typing-indicator" id="typing-indicator"></div>
             <div class="chat-input">
                 <div class="input-tools">
-                    <label for="image-upload" class="input-tool hover-glow" title="Upload Image">
+                    <label for="image-upload" class="input-tool hover-glow">
                         <i class="fas fa-image"></i>
                         <input type="file" id="image-upload" accept="image/*" style="display: none;">
                     </label>
-                    <button id="camera-btn" class="input-tool hover-glow" title="Start Capturing"><i class="fas fa-camera"></i></button>
-                    <button id="emoji-btn" class="input-tool hover-glow"title="Emojis"><i class="fas fa-smile"></i></button>
-                    <button id="voice-btn" class="input-tool hover-glow" title="Send Audio"><i class="fas fa-microphone"></i></button>
-                    <button id="show-conference-btn" class="input-tool hover-glow" title="Start Video Conference"><i class="fas fa-video"></i></button>
+                    <button id="camera-btn" class="input-tool hover-glow"><i class="fas fa-camera"></i></button>
+                    <button id="emoji-btn" class="input-tool hover-glow"><i class="fas fa-smile"></i></button>
+                    <button id="voice-btn" class="input-tool hover-glow"><i class="fas fa-microphone"></i></button>
                 </div>
                 <input type="text" id="message-input" placeholder="Type a message...">
                 <button id="send-btn" class="hover-glow"><i class="fas fa-paper-plane"></i></button>
@@ -77,8 +76,10 @@
             <span>Connected</span>
         </div>
     </div>
+    <!-- Hidden elements for camera capture -->
     <video id="camera-video" style="display: none;"></video>
     <canvas id="camera-canvas" style="display: none;"></canvas>
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.7.2/dist/socket.io.min.js"></script>
     <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1.14.1/index.js"></script>
     <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
